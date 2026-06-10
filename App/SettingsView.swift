@@ -4,6 +4,7 @@ import ServiceManagement
 struct SettingsView: View {
     @AppStorage(SettingsKeys.doubleTapThreshold) private var threshold: Double = 0.4
     @AppStorage(SettingsKeys.primaryTargetCode) private var primaryTargetCode: String = "ko"
+    @AppStorage(SettingsKeys.secondaryTargetCode) private var secondaryTargetCode: String = "en"
     @State private var launchAtLogin = SMAppService.mainApp.status == .enabled
 
     private let languages: [(code: String, name: String)] = [
@@ -18,6 +19,16 @@ struct SettingsView: View {
                     Text(lang.name).tag(lang.code)
                 }
             }
+
+            Picker("상대 언어 (양방향)", selection: $secondaryTargetCode) {
+                ForEach(languages, id: \.code) { lang in
+                    Text(lang.name).tag(lang.code)
+                }
+            }
+
+            Text("원문이 ‘기본 대상 언어’이면 ‘상대 언어’로, 그 외에는 ‘기본 대상 언어’로 번역합니다.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
 
             VStack(alignment: .leading) {
                 Text("더블탭 인식 시간: \(threshold, specifier: "%.2f")초")

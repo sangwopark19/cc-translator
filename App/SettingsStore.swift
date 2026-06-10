@@ -4,6 +4,7 @@ import CCTransCore
 enum SettingsKeys {
     static let doubleTapThreshold = "doubleTapThreshold"
     static let primaryTargetCode = "primaryTargetCode"
+    static let secondaryTargetCode = "secondaryTargetCode"
 }
 
 struct SettingsStore {
@@ -19,8 +20,10 @@ struct SettingsStore {
         return Language(code: code)
     }
 
-    /// 스마트 양방향의 secondary: primary가 한국어면 영어, 아니면 한국어.
+    /// 스마트 양방향의 상대 언어. 설정에서 지정한다(기본 영어).
+    /// 원문이 primaryTarget이면 이 언어로, 그 외에는 primaryTarget으로 번역한다.
     var secondaryTarget: Language {
-        primaryTarget == .korean ? .english : .korean
+        let code = defaults.string(forKey: SettingsKeys.secondaryTargetCode) ?? "en"
+        return Language(code: code)
     }
 }
