@@ -22,7 +22,8 @@ struct PopupView: View {
             }
         }
         .padding(16)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .frame(width: 360, alignment: .topLeading)
+        .fixedSize(horizontal: false, vertical: true)
         .onExitCommand(perform: onClose)
     }
 
