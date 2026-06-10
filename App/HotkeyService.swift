@@ -44,6 +44,21 @@ final class HotkeyService {
         runLoopSource = source
     }
 
+    deinit {
+        tearDown()
+    }
+
+    private func tearDown() {
+        guard let tap = eventTap else { return }
+        CGEvent.tapEnable(tap: tap, enable: false)
+        if let source = runLoopSource {
+            CFRunLoopRemoveSource(CFRunLoopGetCurrent(), source, .commonModes)
+        }
+        CFMachPortInvalidate(tap)
+        eventTap = nil
+        runLoopSource = nil
+    }
+
     private func handle(_ event: CGEvent) {
         let keyCode = CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode))
         guard keyCode == cKeyCode, event.flags.contains(.maskCommand) else { return }
