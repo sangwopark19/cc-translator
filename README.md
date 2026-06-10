@@ -23,6 +23,18 @@ open build/Build/Products/Debug/CCTrans.app
 첫 실행 시 **손쉬운 사용(Accessibility)** 권한을 허용해야 전역 단축키가 동작합니다.
 시스템 설정 > 개인정보 보호 및 보안 > 손쉬운 사용에서 `CCTrans`를 활성화하세요.
 
+## 안정적 서명 (개발 셋업, 1회)
+
+기본 Debug 빌드는 ad-hoc 서명이라 **재빌드마다 손쉬운 사용 권한이 풀린다**(코드 서명이 매번 달라지기 때문). 안정적 self-signed 인증서로 서명하면 권한이 유지된다:
+
+```bash
+./scripts/make-signing-cert.sh   # 'cctrans-dev' 인증서 1회 생성 (로그인 암호 프롬프트가 뜰 수 있음)
+```
+
+이후 빌드는 `project.yml`이 이 인증서로 Manual 서명한다. 첫 빌드에서 codesign 키 접근 허용("항상 허용")을 한 번 누르면 된다. 손쉬운 사용 권한은 한 번만 부여하면 재빌드에도 유지된다.
+
+대안: Keychain Access → 인증서 지원 → 인증서 생성에서 이름 `cctrans-dev`, 유형 "코드 서명"으로 직접 만들어도 된다.
+
 ## 로드맵
 - OCR 텍스트추출 번역 (Vision + 화면 캡처)
 - OCR 이미지 위치 오버레이 번역
