@@ -4,13 +4,13 @@ import CCTransCore
 /// 전역 cmd+c keyDown을 감시하고 threshold 내 두 번 입력 시 콜백을 호출한다.
 /// Accessibility 권한이 필요하다.
 final class HotkeyService {
-    private let onDoubleCopy: () -> Void
+    private let onDoubleCopy: @MainActor () -> Void
     private var detector: DoubleTapDetector
     private var eventTap: CFMachPort?
     private var runLoopSource: CFRunLoopSource?
     private let cKeyCode: CGKeyCode = 8  // kVK_ANSI_C
 
-    init(threshold: TimeInterval, onDoubleCopy: @escaping () -> Void) {
+    init(threshold: TimeInterval, onDoubleCopy: @escaping @MainActor () -> Void) {
         self.onDoubleCopy = onDoubleCopy
         self.detector = DoubleTapDetector(threshold: threshold)
     }
@@ -64,7 +64,20 @@ final class HotkeyService {
         guard keyCode == cKeyCode, event.flags.contains(.maskCommand) else { return }
         let now = ProcessInfo.processInfo.systemUptime
         if detector.register(at: now) {
-            onDoubleCopy()
+            // The event-tap callback installs its run-loop source via
+            // `CFRunLoopGetCurrent()` inside `start()`, which is only ever called from
+            // `applicationDidFinishLaunching` on the main thread. The callback therefore
+            // always fires on the main run loop, so the MainActor invariant genuinely
+            // holds here and `assumeIsolated` is sound (the handler ultimately drives
+            // @MainActor UI code).
+            //
+            // `onDoubleCopy` is a @MainActor () -> Void, which is implicitly Sendable, so
+            // we copy it into a local first; that keeps the non-Sendable `self` out of
+            // the actor-isolated region and avoids a spurious "sending self" diagnostic.
+            let handler = onDoubleCopy
+            MainActor.assumeIsolated {
+                handler()
+            }
         }
     }
 }
