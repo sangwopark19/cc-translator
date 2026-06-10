@@ -1,0 +1,34 @@
+name: CCTrans
+options:
+  bundleIdPrefix: com.sangwopark19
+  deploymentTarget:
+    macOS: "15.0"
+packages:
+  CCTransCore:
+    path: CCTransCore
+targets:
+  CCTrans:
+    type: application
+    platform: macOS
+    sources:
+      - App
+    dependencies:
+      - package: CCTransCore
+        product: CCTransCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.sangwopark19.cctrans
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_LSUIElement: YES
+        MARKETING_VERSION: "0.1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        SWIFT_VERSION: "6.0"
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_IDENTITY: "-"
+schemes:
+  CCTrans:
+    build:
+      targets:
+        CCTrans: all
+    run:
+      config: Debug
