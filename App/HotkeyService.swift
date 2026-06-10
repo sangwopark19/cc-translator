@@ -15,6 +15,12 @@ final class HotkeyService {
         self.detector = DoubleTapDetector(threshold: threshold)
     }
 
+    /// 설정 변경 시 더블탭 임계시간을 앱 재시작 없이 갱신한다.
+    /// 메인 런루프에서만 호출된다(이벤트 탭 콜백과 동일 스레드).
+    func updateThreshold(_ threshold: TimeInterval) {
+        detector = DoubleTapDetector(threshold: threshold)
+    }
+
     func start() {
         let mask = CGEventMask(1 << CGEventType.keyDown.rawValue)
         let refcon = Unmanaged.passUnretained(self).toOpaque()
